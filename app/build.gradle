@@ -1,0 +1,109 @@
+apply plugin: 'com.android.application'
+apply plugin: 'maven-publish'
+
+android
+{
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+
+    defaultConfig
+    {
+        applicationId 'com.mauriciotogneri.webfeeder'
+        minSdkVersion 23
+        targetSdkVersion 26
+        versionCode 1
+        versionName '0.0.1'
+    }
+
+    dexOptions
+    {
+        javaMaxHeapSize '2g'
+        preDexLibraries true
+    }
+
+    signingConfigs
+    {
+        debug
+        {
+            storeFile file('debug.keystore')
+        }
+
+        release
+        {
+            keyAlias project.hasProperty('RELEASE_KEY_ALIAS') ? RELEASE_KEY_ALIAS : ''
+            keyPassword project.hasProperty('RELEASE_KEY_PASSWORD') ? RELEASE_KEY_PASSWORD : ''
+            storePassword project.hasProperty('RELEASE_STORE_PASSWORD') ? RELEASE_STORE_PASSWORD : ''
+            storeFile project.hasProperty('RELEASE_STORE_FILE') ? file(RELEASE_STORE_FILE) : file('.')
+        }
+    }
+
+    buildTypes
+    {
+        debug
+        {
+            debuggable true
+        }
+
+        release
+        {
+            debuggable false
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    lintOptions
+    {
+        checkReleaseBuilds false
+        abortOnError false
+        disable 'MissingTranslation'
+        disable 'ContentDescription'
+        disable 'RtlHardcoded'
+        disable 'RtlSymmetry'
+        disable 'GoogleAppIndexingWarning'
+        disable 'MissingDefaultResource'
+        disable 'ExtraTranslation'
+    }
+
+    flavorDimensions 'default'
+
+    compileOptions
+    {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+ext
+{
+    support = '28.0.0'
+    okhttp = '3.11.0'
+}
+
+dependencies
+{
+    // support
+    implementation "com.android.support:support-v4:$support"
+    implementation "com.android.support:appcompat-v7:$support"
+    implementation "com.android.support:design:$support"
+
+    // okhttp
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp"
+
+    // android utils
+    implementation 'com.mauriciotogneri:androidutils:3.7.1'
+
+    // glide
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+
+    // joda time
+    implementation 'joda-time:joda-time:2.10'
+
+    // streams
+    implementation 'com.annimon:stream:1.2.1'
+
+    // rss
+    implementation 'com.rometools:rome:1.11.1'
+}
