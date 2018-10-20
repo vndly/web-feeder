@@ -6,16 +6,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 
 import com.mauriciotogneri.webfeeder.R;
+import com.mauriciotogneri.webfeeder.adapters.EntryAdapter;
+import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 
 import java.io.ByteArrayInputStream;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -84,14 +87,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onPostExecute(SyndFeed feed)
             {
-                updateText(feed.getTitle());
+                createPages(feed.getEntries());
             }
         }.execute();
     }
 
-    private void updateText(String title)
+    private void createPages(List<SyndEntry> entries)
     {
-        TextView textView = findViewById(R.id.feedTitle);
-        textView.setText(title);
+        ViewPager pager = findViewById(R.id.pager);
+        pager.setAdapter(new EntryAdapter(getSupportFragmentManager(), entries));
     }
 }
