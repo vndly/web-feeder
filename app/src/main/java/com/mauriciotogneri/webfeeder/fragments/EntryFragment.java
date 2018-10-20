@@ -1,13 +1,12 @@
 package com.mauriciotogneri.webfeeder.fragments;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.mauriciotogneri.webfeeder.R;
 
@@ -29,17 +28,42 @@ public class EntryFragment extends Fragment
         String html = getArguments().getString("content");
 
         View view = inflater.inflate(R.layout.view_entry, container, false);
-        TextView content = view.findViewById(R.id.content);
+        WebView webview = view.findViewById(R.id.content);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        {
-            content.setText(Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT));
-        }
-        else
-        {
-            content.setText(Html.fromHtml(html));
-        }
+        loadEntry(webview, html);
 
         return view;
+    }
+
+    private void loadEntry(WebView webview, String content)
+    {
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.getSettings().setLoadWithOverviewMode(true);
+        webview.getSettings().setUseWideViewPort(true);
+        webview.setWebViewClient(new WebViewClient()
+        {
+            private boolean isFinished = false;
+
+            @Override
+            public void onPageFinished(WebView view, String url)
+            {
+                super.onPageFinished(view, url);
+                isFinished = true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                if (isFinished)
+                {
+                    System.out.println(url);
+                }
+
+                return isFinished;
+            }
+        });
+
+        String html = "<link rel='stylesheet' type='text/css' href='style.css' />" + content;
+        webview.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null);
     }
 }
